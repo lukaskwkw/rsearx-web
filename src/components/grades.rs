@@ -26,7 +26,7 @@ pub fn grades(props: &GradesProps) -> Html {
         .map(|(k, v)| {
             let k_string = k.to_string();
             let onchange = {
-            let k_string = k.to_string();
+                let k_string = k.to_string();
                 let set_grade = props.set_grade.clone();
                 move |_| set_grade.emit(k_string.clone())
             };

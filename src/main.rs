@@ -1,19 +1,20 @@
 use std::{collections::HashSet, rc::Rc};
-
-use log::info;
-use yew::prelude::*;
+use web_sys::HtmlInputElement;
 
 use crate::state::{Action, State};
 use components::grades::Grades;
+use log::info;
+use yew::prelude::*;
+use yew::TargetCast;
+
 mod components;
 mod state;
 
 #[function_component(App)]
 fn app() -> Html {
     let state = use_reducer(|| State {
-        ignore_list: Vec::new(),
-        max_response_time_limit_ms: None,
         grades: Rc::new(HashSet::from(["C".to_string(), "V".to_string()])),
+        ..State::default()
     });
 
     let set_grade = {
@@ -23,10 +24,23 @@ fn app() -> Html {
         })
     };
 
+    let oninput = {
+        let state = state.clone();
+        move |e: InputEvent| {
+            let input = e.target_dyn_into::<HtmlInputElement>();
+            input
+                .map(|input| state.dispatch(Action::SetReqwestAgent(input.value())))
+                .unwrap_or_default()
+        }
+    };
     let grades = state.grades.clone();
+    let agent = state.reqwest_agent.clone().unwrap_or_default();
     info!("grades {grades:?}");
+    info!("agent {agent:?}");
     html!(
     <div>
+    <label for="agent">{"Reqwest agent"}</label>
+    <input name="agent" type="text" oninput={oninput} value={agent} />
     <Grades {set_grade} {grades} />
     </div>
     )

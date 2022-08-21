@@ -419,6 +419,10 @@ function getImports() {
         const ret = getObject(arg0).cancelBubble;
         return ret;
     };
+    imports.wbg.__wbg_instanceof_HtmlInputElement_3fad42774bc62388 = function(arg0) {
+        const ret = getObject(arg0) instanceof HTMLInputElement;
+        return ret;
+    };
     imports.wbg.__wbg_setchecked_a450b330df6b3fa5 = function(arg0, arg1) {
         getObject(arg0).checked = arg1 !== 0;
     };
@@ -493,8 +497,8 @@ function getImports() {
     imports.wbg.__wbindgen_throw = function(arg0, arg1) {
         throw new Error(getStringFromWasm0(arg0, arg1));
     };
-    imports.wbg.__wbindgen_closure_wrapper1737 = function(arg0, arg1, arg2) {
-        const ret = makeClosure(arg0, arg1, 197, __wbg_adapter_18);
+    imports.wbg.__wbindgen_closure_wrapper1847 = function(arg0, arg1, arg2) {
+        const ret = makeClosure(arg0, arg1, 204, __wbg_adapter_18);
         return addHeapObject(ret);
     };
 
@@ -530,7 +534,7 @@ function initSync(bytes) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('rsearx-web-90bb9d154dfd7eca_bg.wasm', import.meta.url);
+        input = new URL('rsearx-web-8de1af7891ca766d_bg.wasm', import.meta.url);
     }
     const imports = getImports();
 
