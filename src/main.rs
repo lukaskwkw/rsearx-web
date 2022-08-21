@@ -3,6 +3,10 @@ use std::collections::HashSet;
 use log::info;
 use yew::prelude::*;
 
+use crate::state::{Action, State};
+
+mod state;
+
 const GRADES: [(&str, &str); 6] = [
     ("V", "Vanilla"),
     ("F", "Fork"),
@@ -12,15 +16,12 @@ const GRADES: [(&str, &str); 6] = [
     ("👁️", "Analytics"),
 ];
 
-#[derive(Debug)]
-struct GradesState {
-    grades: HashSet<String>,
-}
-
 #[function_component(App)]
 fn app() -> Html {
-    let grades_state = use_state(|| GradesState {
-        grades: HashSet::new(),
+    let state = use_reducer(|| State {
+        ignore_list: Vec::new(),
+        max_response_time_limit_ms: None,
+        grades: HashSet::from(["C".to_string(), "V".to_string()]),
     });
     let check_boxes: Html = GRADES
         .iter()
@@ -28,20 +29,12 @@ fn app() -> Html {
             let k_string = k.to_string();
             let onchange = {
                 let k_string = k.to_string();
-                let grades_state = grades_state.clone();
+                let state = state.clone();
                 Callback::from(move |_| {
-                    let mut grades = grades_state.grades.clone();
-
-                    let has_grade = grades.contains(&k_string);
-                    if has_grade {
-                        grades.remove(&k_string);
-                    } else {
-                        grades.insert(k_string.clone());
-                    }
-                    grades_state.set(GradesState { grades });
+                    state.dispatch(Action::ToggleGrade(k_string.clone()));
                 })
             };
-            let grades = &grades_state.grades;
+            let grades = &state.grades;
             let has_grade = grades.contains(&k_string);
             html!(<div>
               <input {onchange} type="checkbox" id={k_string.clone()} name={k_string.clone()} checked={has_grade } />
@@ -51,7 +44,8 @@ fn app() -> Html {
         })
         .collect();
 
-    info!("grades {grades_state:?}");
+    let grades = &state.grades;
+    info!("grades {grades:?}");
     html!(
     <div>
     {check_boxes}
