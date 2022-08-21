@@ -1,54 +1,33 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, rc::Rc};
 
 use log::info;
 use yew::prelude::*;
 
 use crate::state::{Action, State};
-
+use components::grades::Grades;
+mod components;
 mod state;
-
-const GRADES: [(&str, &str); 6] = [
-    ("V", "Vanilla"),
-    ("F", "Fork"),
-    ("C", "Custom css"),
-    ("Cjs", "Custom js"),
-    ("E", "External files"),
-    ("👁️", "Analytics"),
-];
 
 #[function_component(App)]
 fn app() -> Html {
     let state = use_reducer(|| State {
         ignore_list: Vec::new(),
         max_response_time_limit_ms: None,
-        grades: HashSet::from(["C".to_string(), "V".to_string()]),
+        grades: Rc::new(HashSet::from(["C".to_string(), "V".to_string()])),
     });
-    let check_boxes: Html = GRADES
-        .iter()
-        .map(|(k, v)| {
-            let k_string = k.to_string();
-            let onchange = {
-                let k_string = k.to_string();
-                let state = state.clone();
-                Callback::from(move |_| {
-                    state.dispatch(Action::ToggleGrade(k_string.clone()));
-                })
-            };
-            let grades = &state.grades;
-            let has_grade = grades.contains(&k_string);
-            html!(<div>
-              <input {onchange} type="checkbox" id={k_string.clone()} name={k_string.clone()} checked={has_grade } />
-              <label for={k_string}>{v}</label>
-            </div>
-            )
-        })
-        .collect();
 
-    let grades = &state.grades;
+    let set_grade = {
+        let state = state.clone();
+        Callback::from(move |grade| {
+            state.dispatch(Action::ToggleGrade(grade));
+        })
+    };
+
+    let grades = state.grades.clone();
     info!("grades {grades:?}");
     html!(
     <div>
-    {check_boxes}
+    <Grades {set_grade} {grades} />
     </div>
     )
 }
