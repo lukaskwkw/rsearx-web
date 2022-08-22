@@ -57,14 +57,14 @@ pub fn responses(props: &InputProps) -> Html {
             };
             debug!("text {text:?}");
             let display = has_entry
-                .then(|| "block".to_string())
+                .then(|| "flex".to_string())
                 .unwrap_or_else(|| "none".to_string());
             let oninput_slider = oninput.clone();
             html!(
             <div>
               <label for={field.clone()}>{format!("Filter by {field}")}</label>
               <input checked={has_entry} {onchange} type="checkbox" id={field.clone()} name={field.clone()} />
-              <div style={format!("display: {}",display)}>
+              <div class="flex flex-col" style={format!("display: {}",display)}>
                 <input oninput={oninput_slider} step="0.01" type="range" min="0.1" max="3" value={text.clone()}/>
                 <label for={field.clone()}>{field.clone()}</label>
                 <input {onblur} name={field} type="number" step="0.1"  min="0.1" max="3" oninput={oninput} value={text.clone()} />
@@ -75,7 +75,8 @@ pub fn responses(props: &InputProps) -> Html {
         .collect();
 
     html!(
-    <div>
+    <div class="gap-4 flex justify-between flex-row md-flex bg-slate-100 rounded-xl">
+    // <div class={classes!("gap-4", "flex", "justify-center", "flex-row", "md-flex","bg-slate-800", "rounded-xl", "p-8")}>
     {inputs}
     </div>
     )

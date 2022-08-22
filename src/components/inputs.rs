@@ -29,13 +29,12 @@ pub fn text_inputs(props: &InputProps) -> Html {
             let field = field.to_string();
             let mut inputs = (*props.inputs).clone();
             let text = inputs.entry(field.clone()).or_default();
-
             html!(
-                <div>
-            <label for={field.clone()}>{field.clone()}</label>
-            <input name={field} type="text" oninput={oninput} value={text.clone()} />
-                </div>
-                )
+            <div>
+              <label for={field.clone()}>{field.clone()}</label>
+              <input name={field} type="text" oninput={oninput} value={text.clone()} />
+            </div>
+            )
         })
         .collect();
 
