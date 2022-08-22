@@ -4,6 +4,7 @@ use web_sys::HtmlInputElement;
 use crate::state::{Action, State};
 use components::grades::Grades;
 use components::inputs::TextInputs;
+use components::responses::Responses;
 use log::info;
 use yew::prelude::*;
 use yew::TargetCast;
@@ -27,8 +28,8 @@ fn app() -> Html {
 
     let set_input = {
         let state = state.clone();
-        Callback::from(move |(label, text)| {
-            state.dispatch(Action::SetTextInput(label, text));
+        Callback::from(move |(label, text, should_remove)| {
+            state.dispatch(Action::SetTextInput(label, text, should_remove));
         })
     };
 
@@ -44,6 +45,8 @@ fn app() -> Html {
     let grades = state.grades.clone();
     let inputs = state.text_inputs.clone();
     let agent = state.reqwest_agent.clone().unwrap_or_default();
+    let set_input_res = set_input.clone();
+    let inputs_res = inputs.clone();
     info!("grades {grades:?}");
     info!("agent {agent:?}");
     info!("inputs {inputs:?}");
@@ -51,6 +54,7 @@ fn app() -> Html {
     <div>
     <label for="agent">{"Reqwest agent"}</label>
     <input name="agent" type="text" oninput={oninput} value={agent} />
+    <Responses set_input={set_input_res} inputs={inputs_res} />
     <TextInputs {set_input} {inputs} />
     <Grades {set_grade} {grades} />
     </div>

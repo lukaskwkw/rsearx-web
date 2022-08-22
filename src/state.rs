@@ -22,7 +22,7 @@ pub enum Action {
     FetchState,
     SetMaxResponseTime,
     SetReqwestAgent(String),
-    SetTextInput(String, String),
+    SetTextInput(String, String, bool),
 }
 
 impl Reducible for State {
@@ -60,10 +60,14 @@ impl Reducible for State {
                 reqwest_agent: Some(agent),
             }
             .into(),
-            Action::SetTextInput(field, text) => {
+            Action::SetTextInput(field, text, remove) => {
                 let mut inputs = (*self.text_inputs).clone();
-                let input = inputs.entry(field).or_insert_with(|| text.clone());
-                *input = text;
+                if remove {
+                    inputs.remove(&field);
+                } else {
+                    let input = inputs.entry(field).or_insert_with(|| text.clone());
+                    *input = text;
+                }
 
                 Self {
                     text_inputs: Rc::new(inputs),
