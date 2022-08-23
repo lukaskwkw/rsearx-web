@@ -2,34 +2,40 @@ use std::{collections::HashSet, rc::Rc};
 use web_sys::HtmlInputElement;
 
 use crate::state::{Action, State};
-use components::grades::Grades;
-use components::inputs::TextInputs;
-use components::responses::Responses;
-use log::info;
+use components::options::Options;
+
 use yew::prelude::*;
 use yew::TargetCast;
 
 mod components;
 mod state;
 
+#[derive(Default)]
+pub struct MainState {
+    pub search_query: String,
+    pub show_options: bool,
+}
+
 #[function_component(App)]
 fn app() -> Html {
-    let state = use_reducer(|| State {
+    let options_state = use_reducer(|| State {
         grades: Rc::new(HashSet::from(["C".to_string(), "V".to_string()])),
         ..State::default()
     });
 
+    let state = use_state(MainState::default);
+
     let set_grade = {
-        let state = state.clone();
+        let options_state = options_state.clone();
         Callback::from(move |grade| {
-            state.dispatch(Action::ToggleGrade(grade));
+            options_state.dispatch(Action::ToggleGrade(grade));
         })
     };
 
     let set_input = {
-        let state = state.clone();
+        let options_state = options_state.clone();
         Callback::from(move |(label, text, should_remove)| {
-            state.dispatch(Action::SetTextInput(label, text, should_remove));
+            options_state.dispatch(Action::SetTextInput(label, text, should_remove));
         })
     };
 
@@ -38,25 +44,44 @@ fn app() -> Html {
         move |e: InputEvent| {
             let input = e.target_dyn_into::<HtmlInputElement>();
             input
-                .map(|input| state.dispatch(Action::SetReqwestAgent(input.value())))
+                .map(|input| {
+                    state.set(MainState {
+                        search_query: input.value(),
+                        show_options: state.show_options,
+                    })
+                })
                 .unwrap_or_default()
         }
     };
-    let grades = state.grades.clone();
-    let inputs = state.text_inputs.clone();
-    let agent = state.reqwest_agent.clone().unwrap_or_default();
-    let set_input_res = set_input.clone();
-    let inputs_res = inputs.clone();
-    info!("grades {grades:?}");
-    info!("agent {agent:?}");
-    info!("inputs {inputs:?}");
+    let onclick = {
+        let show_options = state.show_options;
+        let query = state.search_query.clone();
+        let state = state.clone();
+        move |_| {
+            state.set(MainState {
+                search_query: query.clone(),
+                show_options: !show_options,
+            })
+        }
+    };
+    let grades = options_state.grades.clone();
+    let inputs = options_state.text_inputs.clone();
+    let search_value = state.search_query.clone();
+    let display_options = &state
+        .show_options
+        .then(|| "flex".to_string())
+        .unwrap_or_else(|| "none".to_string());
     html!(
-    <div>
-    <label for="agent">{"Reqwest agent"}</label>
-    <input name="agent" type="text" oninput={oninput} value={agent} />
-    <Responses set_input={set_input_res} inputs={inputs_res} />
-    <TextInputs {set_input} {inputs} />
-    <Grades {set_grade} {grades} />
+    <div class="h-screen justify-center container mx-auto px-4 flex flex-col items-center gap-8 bg-slate-100">
+        <div style={format!("display: {}",display_options)}>
+            <Options  {set_input} {set_grade} {inputs} {grades} />
+        </div>
+        <div class="flex gap-2">
+            <form method="GET" action="/search">
+                <input placeholder="Search" type="text" name="q" {oninput} value={search_value} />
+            </form>
+            <button {onclick}>{"[O]"}</button>
+        </div>
     </div>
     )
 }

@@ -41,7 +41,7 @@ pub fn grades(props: &GradesProps) -> Html {
         .collect();
 
     html!(
-    <div>
+    <div class="rounded-lg bg-slate-400 p-4">
     {check_boxes}
     </div>
     )

@@ -39,7 +39,7 @@ pub fn text_inputs(props: &InputProps) -> Html {
         .collect();
 
     html!(
-    <div>
+    <div class="flex flex-col items-end gap-4 bg-slate-400 p-4 rounded-lg">
     {inputs}
     </div>
     )

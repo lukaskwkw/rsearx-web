@@ -62,22 +62,24 @@ pub fn responses(props: &InputProps) -> Html {
             let oninput_slider = oninput.clone();
             html!(
             <div>
-              <label for={field.clone()}>{format!("Filter by {field}")}</label>
-              <input checked={has_entry} {onchange} type="checkbox" id={field.clone()} name={field.clone()} />
-              <div class="flex flex-col" style={format!("display: {}",display)}>
-                <input oninput={oninput_slider} step="0.01" type="range" min="0.1" max="3" value={text.clone()}/>
-                <label for={field.clone()}>{field.clone()}</label>
-                <input {onblur} name={field} type="number" step="0.1"  min="0.1" max="3" oninput={oninput} value={text.clone()} />
-              </div>
+                <div class="flex gap-4">
+                    <label for={field.clone()}>{format!("Filter by {field}")}</label>
+                    <input checked={has_entry} {onchange} type="checkbox" id={field.clone()} name={field.clone()} />
+                </div>
+                <div class="flex flex-col gap-4" style={format!("display: {}",display)}>
+                    <label for={field.clone()}>{"Max response time in sec: "}</label>
+                    <input oninput={oninput_slider} step="0.01" type="range" min="0.1" max="3" value={text.clone()}/>
+                    <input {onblur} name={field} type="number" step="0.1"  min="0.1" max="3" oninput={oninput} value={text.clone()} />
+                </div>
             </div>
             )
         })
         .collect();
 
     html!(
-    <div class="gap-4 flex justify-between flex-row md-flex bg-slate-100 rounded-xl">
+    <div class="gap-4 p-4 flex flex-col items-end justify-between flex-row md-flex bg-slate-400 rounded-xl">
     // <div class={classes!("gap-4", "flex", "justify-center", "flex-row", "md-flex","bg-slate-800", "rounded-xl", "p-8")}>
-    {inputs}
+        {inputs}
     </div>
     )
 }
