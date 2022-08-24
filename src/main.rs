@@ -6,6 +6,7 @@ use components::options::Options;
 
 use yew::prelude::*;
 use yew::TargetCast;
+use yew_icons::{Icon, IconId};
 
 mod components;
 mod state;
@@ -72,18 +73,20 @@ fn app() -> Html {
         .then(|| "flex".to_string())
         .unwrap_or_else(|| "none".to_string());
     html!(
-    <div class="h-screen justify-center container mx-auto px-4 flex flex-col items-center gap-8 bg-slate-100">
-        <div style={format!("display: {}",display_options)}>
-            <Options  {set_input} {set_grade} {inputs} {grades} />
+        <div class="w-full justify-center container mx-auto px-4 flex flex-col items-center gap-8">
+            <div style={format!("display: {}",display_options)}>
+                <Options {set_input} {set_grade} {inputs} {grades} />
+            </div>
+            <div class="w-full flex justify-center gap-2">
+                <form class="w-full lg:w-1/2 relative" method="GET" action="/search">
+                    <span class="flex inset-y-0 items-center absolute left-0 pl-2"><Icon icon_id={IconId::FeatherSearch}/></span>
+                    <input class="w-full px-4 py-2 pl-8 border border-slate-700 shadow-sm focus:outline-none focus:border-sky-700"
+                        placeholder="Search" type="text" name="q" {oninput} value={search_value} />
+                </form>
+                <button class="hover:rotate-90 transition-transform" {onclick}><Icon icon_id={IconId::FontAwesomeSolidGears}/></button>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <form method="GET" action="/search">
-                <input placeholder="Search" type="text" name="q" {oninput} value={search_value} />
-            </form>
-            <button {onclick}>{"[O]"}</button>
-        </div>
-    </div>
-    )
+        )
 }
 
 fn main() {

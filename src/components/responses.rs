@@ -1,3 +1,4 @@
+use crate::components::skew_header::SkewHeader;
 use log::debug;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -61,15 +62,14 @@ pub fn responses(props: &InputProps) -> Html {
                 .unwrap_or_else(|| "none".to_string());
             let oninput_slider = oninput.clone();
             html!(
-            <div>
-                <div class="flex gap-4">
-                    <label for={field.clone()}>{format!("Filter by {field}")}</label>
-                    <input checked={has_entry} {onchange} type="checkbox" id={field.clone()} name={field.clone()} />
+            <div class="bg-slate-100 rounded-lg p-2 w-64">
+                <div class="flex justify-between w-full pr-2">
+                    <label class="cursor-pointer" for={field.clone()}>{format!("Filter by {field} response")}</label>
+                    <input class="checkbox-themed" checked={has_entry} {onchange} type="checkbox" id={field.clone()} name={field.clone()} />
                 </div>
-                <div class="flex flex-col gap-4" style={format!("display: {}",display)}>
-                    <label for={field.clone()}>{"Max response time in sec: "}</label>
+                <div class="flex flex-col gap-2 mt-2 p-2" style={format!("display: {}",display)}>
                     <input oninput={oninput_slider} step="0.01" type="range" min="0.1" max="3" value={text.clone()}/>
-                    <input {onblur} name={field} type="number" step="0.1"  min="0.1" max="3" oninput={oninput} value={text.clone()} />
+                    <input class="p-1 border border-slate-700" {onblur} name={field} type="number" step="0.1"  min="0.1" max="3" oninput={oninput} value={text.clone()} />
                 </div>
             </div>
             )
@@ -77,8 +77,8 @@ pub fn responses(props: &InputProps) -> Html {
         .collect();
 
     html!(
-    <div class="gap-4 p-4 flex flex-col items-end justify-between flex-row md-flex bg-slate-400 rounded-xl">
-    // <div class={classes!("gap-4", "flex", "justify-center", "flex-row", "md-flex","bg-slate-800", "rounded-xl", "p-8")}>
+    <div class="gap-6 p-4 flex flex-col items-center justify-between flex-row md-flex bg-slate-400 rounded-xl">
+        <SkewHeader class="w-64 mb-2">{"Engines response times (sec)"}</SkewHeader>
         {inputs}
     </div>
     )

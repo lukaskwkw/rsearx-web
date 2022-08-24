@@ -32,7 +32,7 @@ pub fn options(props: &InputProps) -> Html {
     info!("inputs {inputs:?}");
 
     html!(
-    <div class="flex flex-col gap-8">
+    <div class="flex flex-wrap flex-col md:flex-row p-8 gap-8 bg-slate-100">
         // <label for="agent">{"Reqwest agent"}</label>
         // <input name="agent" type="text" oninput={oninput} value={agent} />
         <Responses set_input={set_input_res} inputs={inputs_res} />

@@ -4,8 +4,9 @@ use web_sys::HtmlInputElement;
 use yew::function_component;
 use yew::prelude::*;
 use yew::Callback;
+use crate::components::skew_header::SkewHeader;
 
-const OTHER_FIELDS: [&str; 3] = ["min_version", "max_version", "country"];
+const OTHER_FIELDS: [&str; 2] = ["min_version", "max_version"];
 #[derive(PartialEq, Properties)]
 pub struct InputProps {
     pub inputs: Rc<HashMap<String, String>>,
@@ -30,17 +31,18 @@ pub fn text_inputs(props: &InputProps) -> Html {
             let mut inputs = (*props.inputs).clone();
             let text = inputs.entry(field.clone()).or_default();
             html!(
-            <div>
+            <div class="flex gap-2">
               <label for={field.clone()}>{field.clone()}</label>
-              <input name={field} type="text" oninput={oninput} value={text.clone()} />
+              <input class="border border-slate-700 focus:outline-none focus:border-sky-700" name={field} type="text" oninput={oninput} value={text.clone()} />
             </div>
             )
         })
         .collect();
 
     html!(
-    <div class="flex flex-col items-end gap-4 bg-slate-400 p-4 rounded-lg">
-    {inputs}
+    <div class="flex flex-col items-end gap-4 elative bg-slate-400 p-4 rounded-lg">
+        <SkewHeader>{"Versions"}</SkewHeader>
+        {inputs}
     </div>
     )
 }
