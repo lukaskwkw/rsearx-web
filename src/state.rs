@@ -1,7 +1,12 @@
+use gloo_net::http::Request;
+use serde_json::Map;
+use serde_json::Value;
 use std::{
     collections::{HashMap, HashSet},
     rc::Rc,
 };
+use wasm_bindgen::JsValue;
+use wasm_bindgen_futures::spawn_local;
 
 use yew::Reducible;
 
@@ -21,6 +26,7 @@ pub enum Action {
     ToggleGrade(String),
     FetchState,
     SetMaxResponseTime,
+    SendState,
     SetReqwestAgent(String),
     SetTextInput(String, String, bool),
 }
@@ -77,6 +83,33 @@ impl Reducible for State {
                     reqwest_agent: self.reqwest_agent.clone(),
                 }
                 .into()
+            }
+            Action::SendState => {
+                let url = "/save";
+                let mut dto = Map::new();
+                let inputs = &self.text_inputs;
+                inputs.iter().for_each(|(key, value)| {
+                    dto.insert(key.to_string(), Value::String(value.to_string()));
+                });
+                let grades: Vec<Value> = self
+                    .grades
+                    .iter()
+                    .map(|grade| Value::String(grade.to_string()))
+                    .collect();
+
+                dto.insert("grades".to_string(), Value::Array(grades));
+                let dto: Value = dto.into();
+                let js_value = JsValue::from_str(&dto.to_string());
+                debug!("js_value: {js_value:?}");
+                spawn_local(async move {
+                    Request::post(url)
+                        .header("Content-Type", "application/json")
+                        .body(js_value)
+                        .send()
+                        .await
+                        .unwrap();
+                });
+                self.clone()
             }
         }
     }
