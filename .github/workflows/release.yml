@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    branches: ["release"]
+
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  coverage:
+    name: Build & release
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: wasm32-unknown-unknown 
+      - uses: Swatinem/rust-cache@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+      - name: Generate tailwind css file
+        run: "NODE_ENV=production npx tailwindcss -i base.css --c tailwind.config.js -o tailwind.css --minify"
+      - uses: jetli/trunk-action@v0.1.0
+        with:
+          version: 'latest'
+      - run: |
+          trunk build --release --dist web && cp ./opensearch.xml ./web/opensearch.xml
+      - name: Zip web folder
+        uses: vimtor/action-zip@v1
+        with:
+          files: web
+          dest: rsearx-web.zip
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
